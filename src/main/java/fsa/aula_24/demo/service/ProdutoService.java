@@ -19,10 +19,22 @@ public class ProdutoService {
         if (id <= 0) {
             return null;
         }
-        return produtoRepository.buscarPorId(id);
+        Produto produto = produtoRepository.buscarPorId(id);
+        aplicarRegraPremium(produto);
+        return produto;
     }
 
     public List<Produto> listarProdutos() {
-        return produtoRepository.listar();
+        List<Produto> produtos = produtoRepository.listar();
+        for (Produto produto : produtos) {
+            aplicarRegraPremium(produto);
+        }
+        return produtos;
+    }
+
+    private void aplicarRegraPremium(Produto produto) {
+        if (produto != null) {
+            produto.setPremium(produto.getPreco() > 3000);
+        }
     }
 }

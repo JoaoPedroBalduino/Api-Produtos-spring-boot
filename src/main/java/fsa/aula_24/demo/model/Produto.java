@@ -14,7 +14,6 @@ public class Produto {
         this.nome = nome;
         this.preco = preco;
         this.categoria = categoria;
-        this.premium = preco > 3000;
         this.quantidadeEstoque = quantidadeEstoque;
     }
 
@@ -23,5 +22,6 @@ public class Produto {
     public Double getPreco() { return preco; }
     public String getCategoria() { return categoria; }
     public boolean isPremium() { return premium; }
+    public void setPremium(boolean premium) { this.premium = premium; }
     public int getQuantidadeEstoque() { return quantidadeEstoque; }
 }
