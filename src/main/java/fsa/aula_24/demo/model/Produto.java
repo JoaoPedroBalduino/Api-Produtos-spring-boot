@@ -1,7 +1,15 @@
 package fsa.aula_24.demo.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
 public class Produto {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nome;
     private Double preco;
@@ -9,8 +17,10 @@ public class Produto {
     private boolean premium;
     private int quantidadeEstoque;
 
-    public Produto(Long id, String nome, Double preco, String categoria, int quantidadeEstoque) {
-        this.id = id;
+    protected Produto() {
+    }
+
+    public Produto(String nome, Double preco, String categoria, int quantidadeEstoque) {
         this.nome = nome;
         this.preco = preco;
         this.categoria = categoria;

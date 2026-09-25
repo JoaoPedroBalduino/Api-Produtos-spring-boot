@@ -19,13 +19,13 @@ public class ProdutoService {
         if (id <= 0) {
             return null;
         }
-        Produto produto = produtoRepository.buscarPorId(id);
+        Produto produto = produtoRepository.findById(id).orElse(null);
         aplicarRegraPremium(produto);
         return produto;
     }
 
     public List<Produto> listarProdutos() {
-        List<Produto> produtos = produtoRepository.listar();
+        List<Produto> produtos = produtoRepository.findAll();
         for (Produto produto : produtos) {
             aplicarRegraPremium(produto);
         }
