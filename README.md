@@ -1,24 +1,32 @@
-# API de Produtos — Spring Boot
+# API de Produtos e Professores — Spring Boot
 
-API REST desenvolvida em Java + Spring Boot para a disciplina de Desenvolvimento Back-End Java, aplicando os conceitos de Controller, Service, Repository, Path Variable e regras de negócio.
+API REST desenvolvida em Java + Spring Boot para a disciplina de Desenvolvimento Back-End Java, aplicando os conceitos de Controller, Service, Repository, JPA, PostgreSQL e CRUD.
+
+- **Aluno:** João Pedro Balduino L.
+- **Disciplina:** Desenvolvimento Back-End Java
 
 ## O que a API faz
 
-Simula o backend de uma loja de produtos. Permite consultar produtos cadastrados, verificar se estão disponíveis em estoque e buscar por categoria — sem uso de banco de dados (os dados ficam em memória, numa `List`).
+- **Produtos**: simula o backend de uma loja, permitindo consultar produtos cadastrados, verificar disponibilidade em estoque e buscar por categoria.
+- **Professores**: permite cadastrar, listar, filtrar (por nome e por área), editar e excluir professores, persistidos no PostgreSQL via Spring Data JPA.
 
 ## Estrutura do projeto
 
 ```
 src/main/java/fsa/aula_24/demo
 ├── controller
-│   └── ProdutoController.java
+│   ├── ProdutoController.java
+│   └── ProfessorController.java
 ├── service
 │   ├── ProdutoService.java      → regras de negócio de produto (ex: premium)
-│   └── EstoqueService.java      → regras de negócio de estoque/disponibilidade
+│   ├── EstoqueService.java      → regras de negócio de estoque/disponibilidade
+│   └── ProfessorService.java    → CRUD e filtros de professor
 ├── repository
-│   └── ProdutoRepository.java   → armazena os produtos em memória
+│   ├── ProdutoRepository.java
+│   └── ProfessorRepository.java → consultas derivadas (nome/área)
 └── model
-    └── Produto.java
+    ├── Produto.java
+    └── Professor.java
 ```
 
 ### Responsabilidade de cada camada
@@ -26,14 +34,15 @@ src/main/java/fsa/aula_24/demo
 - **Controller**: recebe as requisições HTTP, não contém regra de negócio, apenas encaminha para os Services.
 - **ProdutoService**: busca produtos e aplica a regra de produto premium.
 - **EstoqueService**: verifica se um produto está disponível (estoque > 0). Responsabilidade separada da de `ProdutoService`.
-- **ProdutoRepository**: guarda e devolve os dados dos produtos, sem lógica de negócio.
+- **ProfessorService**: aplica o CRUD de professores e os filtros por nome/área.
+- **Repository**: guarda e devolve os dados via Spring Data JPA, sem lógica de negócio.
 
 ## Regras de negócio
 
 1. **Produto premium**: todo produto com preço maior que R$ 3.000,00 é marcado automaticamente como `premium` (campo `premium` no JSON).
 2. **Disponibilidade**: um produto só está disponível se sua quantidade em estoque for maior que zero.
 
-## Endpoints
+## Endpoints — Produtos
 
 | Método | Endpoint | Descrição |
 |---|---|---|
@@ -62,18 +71,63 @@ GET /produto/99
 "Produto não encontrado"
 ```
 
+## Endpoints — Professores
+
+| Método | Endpoint | Descrição |
+|---|---|---|
+| GET | `/professores` | Lista todos os professores cadastrados |
+| GET | `/professores/nome/{nome}` | Filtra professores cujo nome contenha o texto informado (parcial, case insensitive) |
+| GET | `/professores/area/{area}` | Filtra professores pela área informada (case insensitive) |
+| POST | `/professores` | Cadastra um novo professor |
+| PUT | `/professores/{id}` | Edita o professor correspondente ao ID |
+| DELETE | `/professores/{id}` | Exclui o professor correspondente ao ID |
+
+### Exemplos
+
+```
+GET /professores/nome/joao
+→ 200 OK
+[{ "id": 1, "nome": "João da Silva", "email": "joao.silva@email.com", "area": "Desenvolvimento", "telefone": "86999990001" }]
+
+POST /professores
+Body: { "nome": "Maria Silva", "email": "maria@email.com", "area": "Desenvolvimento", "telefone": "86999999999" }
+→ 201 Created
+{ "id": 5, "nome": "Maria Silva", "email": "maria@email.com", "area": "Desenvolvimento", "telefone": "86999999999" }
+
+PUT /professores/5
+Body: { "nome": "Maria Silva Santos", "email": "mariasantos@email.com", "area": "Engenharia de Software", "telefone": "86988888888" }
+→ 200 OK
+
+DELETE /professores/5
+→ 204 No Content
+
+GET /professores/99
+→ 404 Not Found (quando aplicável, ex.: PUT/DELETE em ID inexistente)
+```
+
+## Banco de dados
+
+A tabela `professor` é criada automaticamente pelo Hibernate (`spring.jpa.hibernate.ddl-auto=update`) a partir da entidade `Professor`, com as colunas `id` (BIGSERIAL/identity, chave primária), `nome` (VARCHAR 100), `email` (VARCHAR 150), `area` (VARCHAR 100) e `telefone` (VARCHAR 20).
+
+Registros iniciais para teste são inseridos automaticamente na subida da aplicação pelo script `src/main/resources/data.sql`.
+
+Configure a conexão em `src/main/resources/application.properties` (`spring.datasource.url`, `username`, `password`) de acordo com o seu PostgreSQL local.
+
 ## Como executar
 
-Pré-requisitos: Java instalado e Maven (ou usar o `mvnw` incluso no projeto).
+Pré-requisitos: Java instalado, Maven (ou usar o `mvnw` incluso no projeto) e um PostgreSQL rodando localmente com o banco configurado em `application.properties`.
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-A aplicação sobe em `http://localhost:8080`.
+A aplicação sobe em `http://localhost:8080`. Ao iniciar, o Hibernate cria/atualiza a tabela `professor` e os registros iniciais são inseridos via `data.sql`.
 
 ## Tecnologias
 
 - Java
 - Spring Boot
 - Spring Web (`@RestController`, `@Service`, `@Repository`)
+- Spring Data JPA
+- PostgreSQL
+- Maven
