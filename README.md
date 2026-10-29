@@ -5,6 +5,14 @@ API REST desenvolvida em Java + Spring Boot para a disciplina de Desenvolvimento
 - **Aluno:** João Pedro Balduino L.
 - **Disciplina:** Desenvolvimento Back-End Java
 
+## 🎥 Vídeo de apresentação
+
+[![Vídeo de apresentação do projeto](https://img.youtube.com/vi/IQnRKRJfN1o/maxresdefault.jpg)](https://www.youtube.com/watch?v=IQnRKRJfN1o)
+
+No vídeo eu apresento a estrutura do projeto, o relacionamento entre Categoria e Produto, o CRUD, os filtros, as regras de negócio e o tratamento de erros, com testes feitos pelo Swagger.
+
+▶️ [Assistir no YouTube](https://www.youtube.com/watch?v=IQnRKRJfN1o)
+
 ## Modelo de dados
 
 ```
